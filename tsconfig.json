@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": false,
+        "noImplicitAny": true,
+        "experimentalDecorators": true,
+        "module": "amd",
+        "target": "es2015",
+        "sourceMap": true,
+        "rootDir": "src",
+        "alwaysStrict": true,
+        "declaration": true
+    },
+    "exclude": [
+    ]
+}

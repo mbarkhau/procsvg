@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <title>ProcSVG</title>
+
+    <style type="text/css">
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: white;
+        position: relative;
+    }
+    #toolbar-container, #editor-container, #viewer-container, #console-container {
+        position: absolute;
+    }
+    #editor-container {
+        top: 0px;
+        left: 0px;
+
+        background: #ccc url(img/editor_loading_bg.png) no-repeat;
+    }
+
+    .layout-evc #editor-container {width: 50vw; top: 32px; height: calc(100vh + 32px);}
+    .layout-e   #editor-container {width: 100vw; top: 32px; height: calc(100vh + 32px);}
+    .layout-v   #editor-container {display: none;}
+    .layout-c   #editor-container {display: none;}
+
+    .layout-evc #viewer-container {width: 50vw; height: 70vh;}
+    .layout-v   #viewer-container {width: 100vw; height: 100vh;}
+    .layout-e   #viewer-container {display: none;}
+    .layout-c   #viewer-container {display: none;}
+
+    .layout-evc #console-container {width: 50vw; top: 70vh; height: 30vh;}
+    .layout-c   #console-container {width: 100vw; top: 32px; height: calc(100vh - 32px);}
+    .layout-e   #console-container {display: none;}
+    .layout-v   #console-container {display: none;}
+
+    #toolbar-container {width: 50vw; top: 0px; left: 0px;}
+    #viewer-container {top: 0px; right: 0px;}
+
+    #toolbar-container {
+        height: 32px;
+        background-color: #FFF;
+        color: #000;
+        overflow: hidden;
+    }
+
+    .light-theme #viewer-container {background: #DDD; }
+    .light-theme #console-container {background: white; color: black;}
+    .dark-theme #viewer-container {background: #222; }
+    .dark-theme #console-container {background: black; color: white;}
+
+    .light-theme #console-container thead > tr {background-color: #DDD; }
+    .light-theme #console-container tr:nth-child(2n) {background-color: #DDD; }
+    .light-theme #console-container tr:hover {background-color: #DDF; }
+
+    .dark-theme #console-container thead > tr {background-color: #222; }
+    .dark-theme #console-container tr:nth-child(2n) {background-color: #222; }
+    .dark-theme #console-container tr:hover {background-color: #224; }
+
+    .light-theme #console-container > div {border-color: #DDD;}
+    .dark-theme #console-container > div {border-color: #444;}
+
+    .light-theme .loglvl-info   {background-color: #FFF; color: #888;}
+    .light-theme .loglvl-warn   {background-color: #DC0; color: #000;}
+    .light-theme .loglvl-log    {background-color: #FFF; color: #000;}
+    .light-theme .loglvl-error  {background-color: #A00; color: #FFF;}
+    .light-theme .loglvl-assert {background-color: #A00; color: #FFF;}
+
+    .dark-theme .loglvl-info   {background-color: #000; color: #888;}
+    .dark-theme .loglvl-warn   {background-color: #DC0; color: #FFF;}
+    .dark-theme .loglvl-log    {background-color: #000; color: #FFF;}
+    .dark-theme .loglvl-error  {background-color: #800; color: #FFF;}
+    .dark-theme .loglvl-assert {background-color: #800; color: #FFF;}
+
+    #console-container {
+        right: 0px;
+
+        white-space: pre;
+        overflow-y: scroll;
+
+        font-family: monospace;
+        font-size: 8pt;
+        line-height: 10pt;
+    }
+    #console-container > div {
+        padding: 2px;
+        border-width: 0 0 1px 0;
+        border-style: solid;
+        border-color: #DDD;
+    }
+    #console-container th {
+        font-weight: bold;
+    }
+    #console-container table {
+        border-collapse: collapse;
+        table-layout: fixed;
+        margin: 4px;
+        width: 99%;
+    }
+    #console-container th, #console-container td, #console-container tr {
+        padding: 2px 8px;
+        border: 1px solid #555;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    #console-container th, #console-container td {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #toolbar-container > a {
+        background-color: white;
+        display: block;
+        float: left;
+        width: 32px;
+        height: 30px;
+        line-height: 30px;
+        margin: 2px 8px;
+        text-align: center;
+        text-decoration: none;
+        color: black;
+        text-indent: -99999px;
+        overflow: hidden;
+    }
+    #toolbar-container > a.toolbar-item {
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    #toolbar-container > a#item-commands {background-image: url(img/noun_1072304_commands.svg);}
+    #toolbar-container > a#item-save     {background-image: url(img/noun_974824_save.svg);}
+    #toolbar-container > a#item-download {background-image: url(img/noun_1074901_download.svg); display: none;}
+    #toolbar-container > a#item-editor   {background-image: url(img/noun_435612_editor.svg);}
+    #toolbar-container > a#item-console  {background-image: url(img/noun_45367_terminal.svg);}
+    #toolbar-container > a#item-theme    {background-image: url(img/noun_541591_theme.svg);}
+    #toolbar-container > a#item-viewer   {background-image: url(img/noun_863860_viewer.svg);}
+    #toolbar-container > a#item-about    {background-image: url(img/noun_982784_about.svg);}
+
+    #toolbar-container > a#item-about {
+        float: right;
+    }
+    #toolbar-container > a:hover {
+        -webkit-filter: invert(1);
+        filter: invert(1);
+    }
+
+    #about {
+        display: none;
+        white-space: pre-line;
+        position: absolute;
+        background-color: white;
+        padding: 1em;
+        left: 50vw;
+        top: 50vh;
+        height: 9em;
+        width: 25em;
+        margin-top: -5em;
+        margin-left: -13em;
+        border: 1px solid black;
+        overflow-y: scroll;
+    }
+    .error {
+        color: #F44;
+    }
+    /* https://github.com/loadingio/css-spinner/blob/master/dual-ring.html */
+    @keyframes lds-dual-ring {
+        0% {transform: rotate(0);}
+        100% {transform: rotate(360deg);}
+    }
+    .lds-dual-ring {
+        display: none;
+        position: relative;
+        margin: auto;
+        margin-top: 30vh;
+        width: 40px;
+    }
+    .lds-dual-ring div {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        top: -40px;
+        left: -40px;
+        border-radius: 50%;
+        border: 16px solid #000;
+        border-color: #000 transparent #000 transparent;
+        animation: lds-dual-ring 1.3s linear infinite;
+    }
+    </style>
+</head>
+<body class="light-theme layout-evc">
+    <div id="viewer-container"></div>
+    <div id="editor-container">
+        <div class="lds-dual-ring">
+            <div></div>
+        </div>
+    </div>
+    <div id="console-container"></div>
+    <div id="about">ProcSVG - Procedural SVG Editor
+
+        Source: <a href="https://github.com/mbarkhau/procsvg">github.com/mbarkhau/procsvg</a>
+
+        Icons from the Noun Project, used under CC BY 3.0: https://creativecommons.org/licenses/by/3.0/
+        Icons created by "Anton Gajdosik", "i cons", "Guilhem", "Setyo Ari Wibowo", "anbileru adaleru", "useiconic.com", "Numero Uno", "Mello"
+    </div>
+    <div id="toolbar-container">
+        <a href="#" class="toolbar-item" id="item-commands" title="Command Palete (F1)">F1</a>
+        <a href="#" class="toolbar-item" id="item-save" title="Save and Update (Ctrl+S)">S</a>
+        <a href="#" class="toolbar-item" id="item-download" title="Download SVG">D</a>
+        <a href="#" class="toolbar-item" id="item-editor" title="(Un-)Maximize Editor (Ctrl+K Ctrl+E)">E</a>
+        <a href="#" class="toolbar-item" id="item-console" title="(Un-)Maximize Console (Ctrl+K Ctrl+C)">C</a>
+        <a href="#" class="toolbar-item" id="item-viewer" title="(Un-)Maximize Viewer (Ctrl+K Ctrl+V)">V</a>
+        <a href="#" class="toolbar-item" id="item-theme" title="Switch Day/Night Theme (Ctrl+K Ctrl+L)">L</a>
+        <a href="#" class="toolbar-item" id="item-about" title="About">A</a>
+    </div>
+
+    <script defer type="text/javascript" src="vs/loader.min.js"></script>
+    <script defer type="text/javascript" src="src/app.js"></script>
+</body>
+</html>

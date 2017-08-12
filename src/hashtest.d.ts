@@ -1,0 +1,15 @@
+declare function hash1a(s: string): string;
+declare function hash1b(s: string): string;
+declare function hash2a(s: string): string;
+declare function hash2b(s: string): string;
+declare function hash2c(s: string): string;
+declare function hash3a(s: string): string;
+declare function hash3b(s: string): string;
+declare function hash3c(s: string): string;
+declare function hashFnv32a(s: string): string;
+declare function hashFnv32b(s: string): string;
+declare var numInputs: number;
+declare let inputs: string[];
+declare const inputSize = 100;
+declare function ident(s: string): string;
+declare let hashFuncs: ((s: string) => string)[];
